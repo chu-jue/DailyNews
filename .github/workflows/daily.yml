@@ -1,0 +1,33 @@
+name: Daily News Update
+
+on:
+  schedule:
+    # Run at 11:00 AM Beijing time (03:00 UTC)
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-news:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+
+      - name: Fetch news
+        env:
+          BRAVE_API_KEY: ${{ secrets.BRAVE_API_KEY }}
+        run: python fetch_news.py
+
+      - name: Commit and push
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "📰 Update news - ${{ env.DATE }}"
+          file_pattern: "news.json README.md"
