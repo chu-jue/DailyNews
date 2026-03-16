@@ -23,8 +23,10 @@ jobs:
 
       - name: Fetch news
         env:
-          BRAVE_API_KEY: ${{ secrets.BRAVE_API_KEY }}
-        run: python fetch_news.py
+          DATE: ${{ env.DATE }}
+        run: |
+          export DATE=$(date +%Y-%m-%d)
+          python fetch_news.py
 
       - name: Commit and push
         uses: stefanzweifel/git-auto-commit-action@v5
